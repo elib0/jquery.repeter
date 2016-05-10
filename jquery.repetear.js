@@ -8,17 +8,18 @@
         	elementClass:'element',
             addBtnClass:'.add',
             remBtnClass:'.remove',
-            tplToRepeat: '.template',
-            formValidation: true
+            tplClass: '.template',
+            formValidation: true,
+            formSelector: 'form'
         }, options );
 
 	   	$this.on('click', opt.addBtnClass, function(){
-	   		var template = $this.find(opt.tpl)[0],
-	   			$new=template.nodeName=='SCRIPT'?$(template).tmpl():$(template).clone().removeClass(opt.tpl);
-	   			$new.addClass('.'+elementClass).insertBefore(template);
+	   		var template = $this.find('.'+opt.tplClass)[0],
+	   			$new=template.nodeName=='SCRIPT'?$(template).tmpl():$(template).clone().removeClass('.'+opt.tplClass);
+	   			$new.addClass('.'+opt.elementClass).insertBefore(template);
 
 	   		if (opt.formValidation) { //Si usa form validate
-	   			var $form = $(this).closest('form');
+	   			var $form = $this.closest(opt.formSelector);
 	   			$new.find('[disabled]').prop('disabled',false);
 	   			if($.fn.validator&&$form.data('bs.validator')) $form.validator('reloadFields');
 	   			if($.fn.formValidation&&$form.data('formValidation')){
@@ -27,8 +28,10 @@
 	   				});
 	   			}
 	   		}
-	   		//Agregamos nuevo el nuevo elemento al retorno
+	   		//Agregamos nuevo el nuevo elemento
+	   		response.removedElement = null;
 	   		response.addedElement = $new;
+	   		return response;
 	    }).on('click', '.'+elementClass+' '+opt.remBtnClass, function(){
 
 	    });
