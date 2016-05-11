@@ -30,8 +30,8 @@
 
 	   		if (insertIn) {
 	   			if (opt.elements.mirrorIn){
-	   				var $clone = $new.clone();			//Clonamos elemento ya insertado
-	   				$clone.find('.remove')[0].remove();	//Quitamos boton de elminar si es espejo
+	   				var $clone = $new.clone().removeClass(elementClass);	//Clonamos elemento ya insertado
+	   				$clone.find('.remove')[0].remove();						//Quitamos boton de elminar si es espejo
 	   			}
 	   			$(insertIn).append($clone || $new);	//Insertamos elemento
 	   		}
