@@ -61,10 +61,9 @@
 				$('.r-ele-'+rEleNum, $this).remove();	//Elimina Clones
 				$(this).remove();						//Elimina elemento
 
-				//Enumera elementos nuevamente
-				for (var i = rEleNum+1; i >= numElements; i++) {
-					console.log('enumerando...');
-					$('.r-ele-'+i, $this).removeClass('r-ele-'+i).addClass('r-ele-'+i).tmpl({'numElement':i-1});
+				//Enumera elementos adyacentes nuevamente
+				for (var i = rEleNum+1; i <= numElements; i++) {
+					$('.r-ele-'+i, $this).data('r-ele', i-1).removeClass('r-ele-'+i).addClass('r-ele-'+(i-1));
 				}
 				//Respuesta al borrar elemento
 		   		return {parent: $this,addedElement:null,removedElement:$(this)};
