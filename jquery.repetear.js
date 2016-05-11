@@ -1,24 +1,45 @@
 (function ( $ ) {
 	$.fn.repeter = function(options) {
-		var $this = this;
-		var response = {parent: $this,addedElement:null,removedElement:null};
+		var $this = this,
+			elementOptions = {
+            	class: 'element',
+            	mirrorIn:null,
+            	insertIn: null
+            };
 
         // Opciones por defecto.
 		var opt = $.extend({
-        	elementClass:'element',
-            addBtnClass:'.add',
-            remBtnClass:'.remove',
-            tplClass: '.template',
-            formValidation: true,
-            formSelector: 'form'
-        }, options );
+	            addBtnClass:'.add',
+	            remBtnClass:'.remove',
+	            tplClass: '.template',
+	            formValidation: false,
+	            formSelector: 'form',
+	            elements: elementOptions
+	        }, options ),
+			elementClass = opt.elements.class || elementOptions.class;
 
 	   	$this.on('click', opt.addBtnClass, function(){
-	   		var template = $this.find('.'+opt.tplClass)[0],
-	   			$new=template.nodeName=='SCRIPT'?$(template).tmpl():$(template).clone().removeClass('.'+opt.tplClass);
-	   			$new.addClass('.'+opt.elementClass).insertBefore(template);
+	   		var template = $this.find(opt.tplClass)[0],
+	   			numElement = $this.find(opt.tplClass).length,
+	   			$new=template.nodeName=='SCRIPT'?$(template).tmpl({'numElements':numElement}):$(template).clone().removeClass(opt.tplClass);
 
-	   		if (opt.formValidation) { //Si usa form validate
+	   		$new.addClass((elementClass)); //Agregamos clase de elemento
+
+	   		//Inserta template de acuerdo a opciones
+	   		var clone = null,
+	   			insertIn = opt.elements.insertIn || opt.elements.mirrorIn;
+
+	   		if (insertIn) {
+	   			if (opt.elements.mirrorIn){
+	   				var $clone = $new.clone();			//Clonamos elemento ya insertado
+	   				$clone.find('.remove')[0].remove();	//Quitamos boton de elminar si es espejo
+	   			}
+	   			$(insertIn).prepend($clone || $new);	//Insertamos elemento
+	   		}
+	   		if (!opt.elements.insertIn || opt.elements.mirrorIn) $new.insertBefore(template);
+
+	   		// Si usa "Bootstrap Validator" http://1000hz.github.io/bootstrap-validator/
+	   		if (opt.formValidation) {
 	   			var $form = $this.closest(opt.formSelector);
 	   			$new.find('[disabled]').prop('disabled',false);
 	   			if($.fn.validator&&$form.data('bs.validator')) $form.validator('reloadFields');
@@ -28,14 +49,17 @@
 	   				});
 	   			}
 	   		}
-	   		//Agregamos nuevo el nuevo elemento
-	   		response.removedElement = null;
-	   		response.addedElement = $new;
-	   		return response;
-	    }).on('click', '.'+elementClass+' '+opt.remBtnClass, function(){
-
+	   		//Respuesta al agregar elemento
+	   		return {parent: $this,addedElement:$new,removedElement:null};
+	    }).on('click', '.'+(elementClass)+' '+opt.remBtnClass, function(){
+	    	$(this).closest('.element').fadeOut(250,function(){
+				if (opt.formValidation) $(this).prev().find('select,input,textarea,button').last().focus();
+				$(this).remove();
+				//Respuesta al borrar elemento
+		   		return {parent: $this,addedElement:null,removedElement:$(this)};
+			});
 	    });
 
-	    return response;
+	    return $this;
 	};
 }( jQuery ));
