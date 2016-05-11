@@ -52,10 +52,19 @@
 	   		return {parent: $this,addedElement:$new,removedElement:null};
 	    }).on('click', '.'+(elementClass)+' '+opt.remBtnClass, function(){
 	    	$(this).closest('.element').fadeOut(250,function(){
-	    		var rEleNum = $(this).data('r-ele');
+	    		var rEleNum = $(this).data('r-ele'),
+	    			numElements = $this.find('.'+elementClass).length;
+
+	    		//Foco en penultimo elemento de formulario
 				if (opt.formValidation) $(this).prev().find('select,input,textarea,button').last().focus();
+
 				$('.r-ele-'+rEleNum, $this).remove();	//Elimina Clones
 				$(this).remove();						//Elimina elemento
+
+				//Enumera elementos adyacentes nuevamente
+				for (var i = rEleNum+1; i <= numElements; i++) {
+					$('.r-ele-'+i, $this).data('r-ele', i-1).removeClass('r-ele-'+i).addClass('r-ele-'+(i-1));
+				}
 				//Respuesta al borrar elemento
 		   		return {parent: $this,addedElement:null,removedElement:$(this)};
 			});
