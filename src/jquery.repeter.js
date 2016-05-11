@@ -20,7 +20,7 @@
 	   	$this.on('click', opt.addBtnClass, function(){
 	   		var template = $this.find(opt.tplClass)[0],
 	   			numElement = $this.find('.'+elementClass).length,
-	   			$new=template.nodeName=='SCRIPT'?$(template).tmpl({'numElements':numElement}):$(template).clone().removeClass(opt.tplClass);
+	   			$new=template.nodeName=='SCRIPT'?$(template).tmpl({'numElement':numElement}):$(template).clone().removeClass(opt.tplClass);
 
 	   		$new.addClass(elementClass+' r-ele-'+numElement).data('r-ele', numElement); //Agregamos clase de elemento
 
@@ -33,7 +33,7 @@
 	   				var $clone = $new.clone();			//Clonamos elemento ya insertado
 	   				$clone.find('.remove')[0].remove();	//Quitamos boton de elminar si es espejo
 	   			}
-	   			$(insertIn).prepend($clone || $new);	//Insertamos elemento
+	   			$(insertIn).append($clone || $new);	//Insertamos elemento
 	   		}
 	   		if (!opt.elements.insertIn || opt.elements.mirrorIn) $new.insertBefore(template);
 
@@ -54,8 +54,8 @@
 	    	$(this).closest('.element').fadeOut(250,function(){
 	    		var rEleNum = $(this).data('r-ele');
 				if (opt.formValidation) $(this).prev().find('select,input,textarea,button').last().focus();
-				$('.r-ele-'+rEleNum).remove();	//Elimina Clones
-				$(this).remove();				//Elimina elemento 
+				$('.r-ele-'+rEleNum, $this).remove();	//Elimina Clones
+				$(this).remove();						//Elimina elemento
 				//Respuesta al borrar elemento
 		   		return {parent: $this,addedElement:null,removedElement:$(this)};
 			});
