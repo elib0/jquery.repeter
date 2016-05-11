@@ -15,15 +15,14 @@
 	            formValidation: false,
 	            formSelector: 'form',
 	            elements: elementOptions
-	        }, options ),
-			elementClass = opt.elements.class || elementOptions.class;
-
+	        }, options );
+		var elementClass = opt.elements.class || elementOptions.class;
 	   	$this.on('click', opt.addBtnClass, function(){
 	   		var template = $this.find(opt.tplClass)[0],
-	   			numElement = $this.find(opt.tplClass).length,
+	   			numElement = $this.find('.'+elementClass).length,
 	   			$new=template.nodeName=='SCRIPT'?$(template).tmpl({'numElements':numElement}):$(template).clone().removeClass(opt.tplClass);
 
-	   		$new.addClass((elementClass)); //Agregamos clase de elemento
+	   		$new.addClass(elementClass+' r-ele-'+numElement).data('r-ele', numElement); //Agregamos clase de elemento
 
 	   		//Inserta template de acuerdo a opciones
 	   		var clone = null,
@@ -53,8 +52,10 @@
 	   		return {parent: $this,addedElement:$new,removedElement:null};
 	    }).on('click', '.'+(elementClass)+' '+opt.remBtnClass, function(){
 	    	$(this).closest('.element').fadeOut(250,function(){
+	    		var rEleNum = $(this).data('r-ele');
 				if (opt.formValidation) $(this).prev().find('select,input,textarea,button').last().focus();
-				$(this).remove();
+				$('.r-ele-'+rEleNum).remove();	//Elimina Clones
+				$(this).remove();				//Elimina elemento 
 				//Respuesta al borrar elemento
 		   		return {parent: $this,addedElement:null,removedElement:$(this)};
 			});
