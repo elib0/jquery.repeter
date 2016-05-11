@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<title>Pruebas jquery repetear</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<style type="text/css" media="screen">
+		ul{
+			list-style: none;
+		}
+	</style>
+</head>
+<body>
+	<div class="container-fluid">
+		<h2 class="text-info">Jquery Repeter by: <a href="http://twitter.com/elib0" target="_blank">ELIBO</a></h2>
+		<ul class="dinamic">
+			<li class="well">Item Inicial <button type="button" class="btn btn-success btn-xs add">Agrega nuevo Item</button></li>
+			<script class="template" type="text/x-jQuery-tmpl">
+				<li class="well">Nuevo Item <button type="button" class="btn btn-danger btn-xs remove">Eliminar</button></li>
+			</script>
+		</ul>
+
+		<ul id="espejo"></ul>
+	</div>
+	
+	<!-- SCRIPTS -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+	<script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	<script src="../jquery.repetear.js" type="text/javascript"></script>
+	<script>
+		$(function() {
+			$('.dinamic').repeter(); //Ejemplo Simple
+			// $('.dinamic').repeter({elements: {insertIn:'#espejo'}}); //Ejemplo de insercion en otro lugar
+			// $('.dinamic').repeter({elements: {mirrorIn:'#espejo'}}); //Ejemplo con Espejo
+		});
+	</script>
+</body>
+</html>
