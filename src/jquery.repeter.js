@@ -3,56 +3,57 @@
 (function ( $ ) {
 	$.fn.repeter = function(options) {
 		var $this = this,
-			elementOptions = {
-            	class: 'element',
-            	mirrorIn:null,
-            	mirrorTpl:null,
-            	insertIn: null
-            };
+            defaultOptions = {
+	            addBtnSelector:'.add',
+	            remBtnSelector:'.remove',
+	            tplSelector: '.template',
+	            formSelector: 'form',
+	            elements: {
+	            	class: 'element',
+	            	insertIn: null,
+	            	mirror:{
+	            		selector: null,
+	            		tplSelector: null
+	            	}
+	            }
+	        };
 
         // Opciones por defecto.
-		var opt = $.extend({
-	            addBtnClass:'.add',
-	            remBtnClass:'.remove',
-	            tplClass: '.template',
-	            formSelector: 'form',
-	            elements: elementOptions
-	        }, options );
-		var elementClass = opt.elements.class || elementOptions.class;
-	   	$this.on('click', opt.addBtnClass, function(){
+		var opt = $.extend(true, {}, defaultOptions, options);
+		var elementClass = opt.elements.class || defaultOptions.elements.class;
+
+		//Eventos agregar y eliminar item
+	   	$this.on('click', opt.addBtnSelector, function(){
 	   		var $root = $(this).closest( '.'+$this.attr('class').split(' ').join('.') );
 	   		add($root);
-	    }).on('click', '.'+(elementClass)+' '+opt.remBtnClass, function(){
+	    }).on('click', '.'+(elementClass)+' '+opt.remBtnSelector, function(){
 	    	remove(this);
 	    });
 
 	    var add = function($root){
-	    	var template = $($root).find(opt.tplClass)[0],
+	    	var template = $($root).find(opt.tplSelector)[0],
 	    		numElement = $($root).find('.'+elementClass).length,
-	    		mirrorTemplate = $($root).find(opt.elements.mirrorTpl)[0];
-	    		$new=template.nodeName=='SCRIPT'?$(template).tmpl({'numElement':numElement}):$(template).clone().removeClass(opt.tplClass);
-
-
+	    		mirrorTemplate = $($root).find(opt.elements.mirror.tplSelector)[0];
+	    		$new=template.nodeName=='SCRIPT'?$(template).tmpl({'numElement':numElement}):$(template).clone().removeClass(opt.tplSelector);
 
 	    	$new.addClass(elementClass+' r-ele-'+numElement).data('r-ele', numElement); //Agregamos clase de elemento
-
+	    	var insertIn = opt.elements.insertIn || opt.elements.mirror.selector;
 	    	//Inserta template de acuerdo a opciones
-	    	var clone = null,
-	    		insertIn = opt.elements.insertIn || opt.elements.mirrorIn;
-
 	    	if (insertIn) {
-	    		if (opt.elements.mirrorIn){
+	    		var $clone = null;
+	    		if (opt.elements.mirror.selector){
 	    			if (mirrorTemplate) {//Si existe otro template para el espejo
-	    				var $newMirror=mirrorTemplate.nodeName=='SCRIPT'?$(mirrorTemplate).tmpl({'numElement':numElement}):$(mirrorTemplate).clone().removeClass(opt.tplClass);
+	    				var $newMirror=mirrorTemplate.nodeName=='SCRIPT'?$(mirrorTemplate).tmpl({'numElement':numElement}):$(mirrorTemplate).clone().removeClass(opt.tplSelector);
 	    				$newMirror.addClass(elementClass+' r-ele-'+numElement).data('r-ele', numElement); //Agregamos clase de elemento
-	    				clone = $newMirror.clone().removeClass(elementClass);	//Clonamos elemento ya insertado
+	    				$clone = $newMirror.removeClass(elementClass);							  		  //Clonamos elemento ya insertado
 	    			}else{
-	    				clone = $new.clone().removeClass(elementClass).find('.remove')[0].remove();		//Clonamos elemento ya insertado
+	    				$clone = $new.clone().removeClass(elementClass);	//Clonamos elemento para insertar en espejo
+	    				$clone.find('.remove')[0].remove();					//Quitamos boton de eliminar
 	    			}
 	    		}
-	    		$(insertIn).append(clone || $new);	//Insertamos elemento
+	    		$(insertIn).append($clone || $new);	//Insertamos elemento
 	    	}
-	    	if (!opt.elements.insertIn || opt.elements.mirrorIn) $new.insertBefore(template);
+	    	if (!opt.elements.insertIn || opt.elements.mirror.selector) $new.insertBefore(template);
 
 	    	// Si usa "Bootstrap Validator" http://1000hz.github.io/bootstrap-validator/
 	    	if ($.fn.formValidation || $.fn.validator) {
@@ -79,8 +80,8 @@
 	    		//Foco en penultimo elemento de formulario
 				if ($.fn.formValidation || $.fn.validator) ele.prev().find('select,input,textarea,button').last().focus();
 
-				if(opt.elements.mirrorIn) $('.r-ele-'+rEleNum, opt.elements.mirrorIn).remove();	//Elimina Clones
-				$(this).remove();																//Elimina elemento
+				if(opt.elements.mirror.selector) $('.r-ele-'+rEleNum, opt.elements.mirror.selector).remove();	//Elimina Clones
+				$(this).remove();																				//Elimina elemento
 
 				//Enumera elementos adyacentes nuevamente
 				for (var i = rEleNum+1; i <= numElements; i++) {
