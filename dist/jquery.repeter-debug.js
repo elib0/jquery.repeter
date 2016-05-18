@@ -70,7 +70,7 @@
 	    		//Foco en penultimo elemento de formulario
 				if ($.fn.formValidation || $.fn.validator) ele.prev().find('select,input,textarea,button').last().focus();
 
-				if(opt.elements.mirrorIn) $(opt.elements.mirrorIn, $root).find('.r-ele-'+rEleNum).remove();	//Elimina Clones
+				if(opt.elements.mirrorIn) $('.r-ele-'+rEleNum, opt.elements.mirrorIn).remove();	//Elimina Clones
 				$(this).remove();																//Elimina elemento
 
 				//Enumera elementos adyacentes nuevamente
