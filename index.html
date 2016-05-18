@@ -71,6 +71,9 @@
 							<script class="template" type="text/x-jQuery-tmpl">
 								<li>Item ${numElement}<button type="button" class="btn btn-danger btn-xs remove">Eliminar</button></li>
 							</script>
+							<script class="template-mirror" type="text/x-jQuery-tmpl">
+								<li>Otro Item ${numElement}</li>
+							</script>
 						</ul>
 					</div>
 					<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
@@ -81,7 +84,7 @@
 					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 						<code>
 							<strong>Javascript:</strong>
-							$('.dinamic-3').repeter({elements: {mirrorIn:'#espejo'}});
+							$('.dinamic-3').repeter({elements: {mirrorIn:'#espejo', mirrorTpl:'.template-mirror'}});
 						</code>
 					</div>
 				</div>
@@ -108,7 +111,7 @@
 		$(function() {
 			$('.dinamic').repeter(); //Ejemplo Simple
 			$('.dinamic-2').repeter({elements: {insertIn:'#otro'}}); //Ejemplo de insercion en otro lugar
-			$('.dinamic-3').repeter({elements: {mirrorIn:'#espejo'}}); //Ejemplo con Espejo
+			$('.dinamic-3').repeter({elements: {mirrorIn:'#espejo', mirrorTpl:'.template-mirror'}}); //Ejemplo con Espejo
 		});
 	</script>
 </body>

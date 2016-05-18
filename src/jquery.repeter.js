@@ -6,6 +6,7 @@
 			elementOptions = {
             	class: 'element',
             	mirrorIn:null,
+            	mirrorTpl:null,
             	insertIn: null
             };
 
@@ -28,7 +29,10 @@
 	    var add = function($root){
 	    	var template = $($root).find(opt.tplClass)[0],
 	    		numElement = $($root).find('.'+elementClass).length,
+	    		mirrorTemplate = $($root).find(opt.elements.mirrorTpl)[0];
 	    		$new=template.nodeName=='SCRIPT'?$(template).tmpl({'numElement':numElement}):$(template).clone().removeClass(opt.tplClass);
+
+
 
 	    	$new.addClass(elementClass+' r-ele-'+numElement).data('r-ele', numElement); //Agregamos clase de elemento
 
@@ -38,10 +42,15 @@
 
 	    	if (insertIn) {
 	    		if (opt.elements.mirrorIn){
-	    			var $clone = $new.clone().removeClass(elementClass);	//Clonamos elemento ya insertado
-	    			$clone.find('.remove')[0].remove();						//Quitamos boton de elminar si es espejo
+	    			if (mirrorTemplate) {//Si existe otro template para el espejo
+	    				var $newMirror=mirrorTemplate.nodeName=='SCRIPT'?$(mirrorTemplate).tmpl({'numElement':numElement}):$(mirrorTemplate).clone().removeClass(opt.tplClass);
+	    				$newMirror.addClass(elementClass+' r-ele-'+numElement).data('r-ele', numElement); //Agregamos clase de elemento
+	    				clone = $newMirror.clone().removeClass(elementClass);	//Clonamos elemento ya insertado
+	    			}else{
+	    				clone = $new.clone().removeClass(elementClass).find('.remove')[0].remove();		//Clonamos elemento ya insertado
+	    			}
 	    		}
-	    		$(insertIn).append($clone || $new);	//Insertamos elemento
+	    		$(insertIn).append(clone || $new);	//Insertamos elemento
 	    	}
 	    	if (!opt.elements.insertIn || opt.elements.mirrorIn) $new.insertBefore(template);
 
