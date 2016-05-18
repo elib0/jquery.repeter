@@ -23,8 +23,7 @@
 	   		var $root = $(this).closest( '.'+$this.attr('class') );
 	   		add($root);
 	    }).on('click', '.'+(elementClass)+' '+opt.remBtnClass, function(){
-	    	var $root = $(this).closest( '.'+$this.attr('class') );
-	    	remove(this,$root);
+	    	remove(this);
 	    });
 
 	    var add = function($root){
@@ -62,24 +61,25 @@
 	    	return {parent:$root,addedElement:$new,removedElement:null};
 	    }
 
-	    var remove = function(ele,$root){
-	    	ele = ( (typeof ele) == 'number' )?$('button.remove','r-ele-'+ele): ele;
-	    	$(ele,$root).closest('.element').fadeOut(250,function(){
-	    		var rEleNum = $(ele,$root).data('r-ele'),
-	    			numElements = $this.find('.'+elementClass).length;
+	    var remove = function(ele){
+	    	var $root = $(ele).closest( '.'+$this.attr('class') );
+	    	ele = ( (typeof ele) == 'number' )?$('button.remove','r-ele-'+ele): $(ele,$root);
+	    	ele.closest('.element').fadeOut(250,function(){
+	    		var rEleNum = $(this).data('r-ele'),
+	    			numElements = $('.'+elementClass,$root).length;
 
 	    		//Foco en penultimo elemento de formulario
-				if (opt.formValidation) $(ele,$root).prev().find('select,input,textarea,button').last().focus();
+				if (opt.formValidation) ele.prev().find('select,input,textarea,button').last().focus();
 
-				$('.r-ele-'+rEleNum, $this).remove();	//Elimina Clones
-				$(ele,$root).remove();						//Elimina elemento
+				$('.r-ele-'+rEleNum, $root).remove();	//Elimina Clones
+				$(this).remove();						//Elimina elemento
 
 				//Enumera elementos adyacentes nuevamente
 				for (var i = rEleNum+1; i <= numElements; i++) {
 					$('.r-ele-'+i, $this).data('r-ele', i-1).removeClass('r-ele-'+i).addClass('r-ele-'+(i-1));
 				}
 				//Respuesta al borrar elemento
-		   		return {parent: $this,addedElement:null,removedElement:$(ele,$root)};
+		   		return {parent: $root,addedElement:null,removedElement:ele};
 			});
 	    }
 
