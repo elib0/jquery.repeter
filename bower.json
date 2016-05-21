@@ -1,0 +1,26 @@
+{
+  "name": "jquery-boilerplate",
+  "license": "MIT",
+  "authors": [
+    "Elib0 <hi@zenorocha.com>"
+  ],
+  "description": "A jump-start for jQuery plugins development.",
+  "homepage": "http://jqueryboilerplate.com",
+  "keywords": [
+    "jquery",
+    "plugin",
+    "boilerplate",
+    "jquery-plugin",
+    "jquery-boilerplate"
+  ],
+  "main": "src/jquery.boilerplate.js",
+  "dependencies": {
+    "jquery": "^2.2.4",
+    "animate.css": "^3.5.1"
+  },
+  "ignore": [
+    "npm-debug.log",
+    "bower_components",
+    "node_modules"
+  ]
+}

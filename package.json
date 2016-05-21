@@ -1,0 +1,43 @@
+{
+  "author": {
+    "email": "elijose.c@gmail.com",
+    "name": "Elib0",
+    "url": "https://github.com/elib0"
+  },
+  "dependencies": {},
+  "description": "Sencillo plugin que repite elementos del DOM mediante botones para añadir nuevo o eliminar elemento, Perfecto para Formularios dinámicos que requieren múltiples conjuntos de inputs iguales.",
+  "devDependencies": {
+    "browser-sync": "^2.12.8",
+    "gulp": "^3.9.1",
+    "gulp-minify": "0.0.11",
+    "jscs": "^2.10.1",
+    "karma": "^0.13.21",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-phantomjs-launcher": "^0.2.1",
+    "karma-qunit": "^0.1.5",
+    "phantomjs": "^1.9.18",
+    "qunitjs": "^1.19.0"
+  },
+  "gitHead": "a270f97ba531ecf52de280bdb3ea56d3c8c0122b",
+  "homepage": "https://elib0.github.io/jquery.repeter/",
+  "keywords": [
+    "plugin",
+    "jquery",
+    "jquery-plugin",
+    "plugins",
+    "repeat"
+  ],
+  "license": "MIT",
+  "name": "jquery-repeter",
+  "optionalDependencies": {},
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elib0/jquery.repeter.git"
+  },
+  "scripts": {
+    "jscs": "jscs src",
+    "test": "npm run jscs && grunt travis --verbose"
+  },
+  "version": "2.0.0"
+}
