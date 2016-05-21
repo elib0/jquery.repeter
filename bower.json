@@ -16,7 +16,8 @@
   "main": "src/jquery.boilerplate.js",
   "dependencies": {
     "jquery": "^2.2.4",
-    "animate.css": "^3.5.1"
+    "animate.css": "^3.5.1",
+    "bootstrap": "^3.3.6"
   },
   "ignore": [
     "npm-debug.log",
