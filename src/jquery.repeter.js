@@ -157,13 +157,32 @@
 	    	}
 		}
 
-		$.fn[ pluginName ] = function( options ) {
-			return this.each( function() {
-				if ( !$.data( this, "plugin_" + pluginName ) ) {
-					$.data( this, "plugin_" +
-						pluginName, new Repeter( this, options ) );
-				}
-			} );
-		};
+		//Registrando el plugin
+		$.fn[pluginName] = function ( options ) {
+	        var args = arguments;
+	        if (options === undefined || typeof options === 'object') {
+	            return this.each(function () {
+	                if (!$.data(this, 'plugin_' + pluginName)) {
+	                    $.data(this, 'plugin_' + pluginName, new Repeter( this, options ));
+	                }
+	            });
+
+	       	//Ahora si se ya hay una instancia del plugin se puede pasar una cadena con el nombre de la funcion
+	        } else if (typeof options === 'string' && options[0] !== '_' && options !== 'init') {
+	            var returns;
+	            this.each(function () {
+	                var instance = $.data(this, 'plugin_' + pluginName);
+
+	                if (instance instanceof Repeter && typeof instance[options] === 'function') {
+	                    returns = instance[options].apply( instance, Array.prototype.slice.call( args, 1 ) );
+	                }
+
+	                if (options === 'destroy') {
+	                  $.data(this, 'plugin_' + pluginName, null);
+	                }
+	            });
+	            return returns !== undefined ? returns : this;
+	        }
+	    };
 
 } )( jQuery, window, document );
