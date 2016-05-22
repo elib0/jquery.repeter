@@ -23,13 +23,11 @@
 		// Constructor
 		function Repeter ( element, options ) {
 			this.element = element;
+			this.template = null;
+			this.items = [];
 
-			// jQuery has an extend method which merges the contents of two or
-			// more objects, storing the result in the first object. The first object
-			// is generally empty as we don't want to alter the default options for
-			// future instances of the plugin
 			this.opt = $.extend(true, {}, defaults, options );
-			this._defaults = defaults;
+			// this._defaults = defaults;
 			this._name = pluginName;
 			this.init();
 		}
@@ -38,7 +36,8 @@
 		$.extend( Repeter.prototype, {
 			init: function() {
 				var $this = this;
-				// console.log(this);
+				this.template = $(this.element).find(this.opt.tplSelector)[0];  //Template Inicial
+				this._template = $(this.element).find(this.opt.elements.mirror.tplSelector)[0]; //Template Secundario
 
 				//Eventos agregar y eliminar item
 			   	$($this.element).on('click', $this.opt.addBtnSelector, function(){
@@ -55,12 +54,14 @@
 		     */
 			addItem: function(){
 		    	var $root = this,	//Repeter Object
-		    		template = $($root.element).find($root.opt.tplSelector)[0],
-		    		numElement = $($root.element).find('.'+$root.opt.elements.class).length,
-		    		mirrorTemplate = $($root.element).find($root.opt.elements.mirror.tplSelector)[0],
+		    		template = this.template,
+		    		mirrorTemplate = this._template,
+		    		numElement = $(this.element).find('.'+this.opt.elements.class).length,
 		    		$new=template.nodeName=='SCRIPT'?$(template).tmpl({'numElement':numElement}):$(template).clone().removeClass($root.opt.tplSelector);
+		    	//Agregamos clase de elemento
+		    	$new.addClass($root.opt.elements.class+' r-ele-'+numElement).data('r-ele', numElement); 
 
-		    	$new.addClass($root.opt.elements.class+' r-ele-'+numElement).data('r-ele', numElement); //Agregamos clase de elemento
+		    	//Buscamos la opcion de insercion(Otro contedor o espejo)
 		    	var insertIn = $root.opt.elements.insertIn || $root.opt.elements.mirror.selector;
 		    	//Inserta template de acuerdo a opciones
 		    	if (insertIn) {
@@ -68,14 +69,19 @@
 		    		if ($root.opt.elements.mirror.selector){
 		    			if (mirrorTemplate) {//Si existe otro template para el espejo
 		    				var $newMirror=mirrorTemplate.nodeName=='SCRIPT'?$(mirrorTemplate).tmpl({'numElement':numElement}):$(mirrorTemplate).clone().removeClass($root.opt.tplSelector);
-		    				$newMirror.addClass($root.opt.elements.class+' r-ele-'+numElement).data('r-ele', numElement); //Agregamos clase de elemento
-		    				$clone = $newMirror.removeClass($root.opt.elements.class);							  		  //Clonamos elemento ya insertado
+		    				//Agregamos clase de elemento
+		    				$newMirror.addClass($root.opt.elements.class+' r-ele-'+numElement).data('r-ele', numElement);
+		    				//Clonamos elemento ya insertado
+		    				$clone = $newMirror.removeClass($root.opt.elements.class);						  		  
 		    			}else{
-		    				$clone = $new.clone().removeClass($root.opt.elements.class);	//Clonamos elemento para insertar en espejo
-		    				$clone.find('.remove')[0].remove();					//Quitamos boton de eliminar
+		    				//Clonamos elemento para insertar en espejo
+		    				$clone = $new.clone().removeClass($root.opt.elements.class);
+		    				//Quitamos boton de eliminar
+		    				$clone.find('.remove')[0].remove();							
 		    			}
 		    		}
-		    		$(insertIn).append($clone || $new);	//Insertamos elemento
+		    		$(insertIn).append($clone || $new);				//Insertamos elemento
+		    		$root.items.push( $.tmplItem($clone || $new) ); //Insertamos elemento al repeter como tmplItem
 		    	}
 		    	if (!$root.opt.elements.insertIn || $root.opt.elements.mirror.selector) $new.insertBefore(template);
 
@@ -114,30 +120,41 @@
 						return {parent: $root,addedElement:null,removedElement:ele};
 					});
 		    	}else{
-		    		element.fadeOut(250,function(){
-		    			deleteItem(element,$root);
-					});
+		    		deleteItem(element,$root);
 		    	}
 		    }
 		});
 
 		//Metodos privadas
-		function deleteItem(ele,container){
+		function deleteItem(ele,$root){
 			var rEleNum = $(ele).data('r-ele'),
-				numElements = $('.'+container.opt.elements.class, container.element).length;
+				numElements = $('.'+$root.opt.elements.class, $root.element).length;
+
+				//Foco en penultimo elemento de formulario
 				if ($.fn.formValidation || $.fn.validator) 
-					ele.prev().find('select,input,textarea,button').last().focus();//Foco en penultimo elemento de formulario
+					ele.prev().find('select,input,textarea,button').last().focus();
 
 				$(ele).remove();														//Elimina elemento
-				if(container.opt.elements.mirror.selector) 
-					$('.r-ele-'+rEleNum, container.opt.elements.mirror.selector).remove();	//Elimina Clones
+				if($root.opt.elements.mirror.selector){
+					$('.r-ele-'+rEleNum, $root.opt.elements.mirror.selector).remove();	//Elimina Clones
+				}
+
+				$root.items.splice(rEleNum, 1); //Remueve del plugin el tmplItem eliminado
 
 				//Enumera elementos adyacentes
-				for (var i = rEleNum+1; i <= numElements; i++) {
-					$('.r-ele-'+i, container.element)
-						.data('r-ele', i-1)
-						.removeClass('r-ele-'+i)
-						.addClass('r-ele-'+(i-1));
+				for (var i = rEleNum+1; i < numElements; i++) {
+					var item = $.tmplItem($('.r-ele-'+i, $root.element));
+					item.data.numElement = i-1;
+					item.update();
+					$(item.nodes).data('r-ele', item.data.numElement)
+						.addClass($root.opt.elements.class+' r-ele-'+item.data.numElement);
+
+					if ($root.opt.elements.mirror.selector) {
+						$('.r-ele-'+i, $root.opt.elements.mirror.selector)
+							// .html('holas')
+							.removeClass('r-ele-'+i)
+							.addClass('r-ele-'+item.data.numElement);
+					}
 				}
 		}
 

@@ -7,15 +7,17 @@ var reload = browserSync.reload;
 gulp.task('move-dependencies', function() {
 	gulp.src(['bower_components/jquery/dist/*.min.js']).pipe(gulp.dest('demo/js/vendor'));
 	gulp.src(['bower_components/animate.css/*.min.css']).pipe(gulp.dest('demo/css/vendor'));
+	gulp.src(['bower_components/bootstrap/dist/css/*.min.css']).pipe(gulp.dest('demo/css/vendor'));
 });
 
 gulp.task('minify', function() {
-  gulp.src('src/*.js')
-      .pipe(minify({
-          ext:{
-              min:'.min.js'
-          }
-      })).pipe(gulp.dest('dist'));
+	gulp.src('src/*.js')
+	.pipe(minify({
+		noSource: true,
+		ext:{
+			min:'.min.js'
+		}
+	})).pipe(gulp.dest('dist'));
 });
 
 // Ve cambios en archivos y recarga
