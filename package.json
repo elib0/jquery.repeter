@@ -39,5 +39,5 @@
     "jscs": "jscs src",
     "test": "npm run jscs && grunt travis --verbose"
   },
-  "version": "2.0.0"
+  "version": "2.0.2"
 }

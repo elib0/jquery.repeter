@@ -72,7 +72,7 @@
 				<div class="selector">div.dinamic-2</div>
 				<div class="panel-body">
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-						<h4><strong>Inserción en otro elemento</strong> <br>(Con animacion css3 usando <a href="https://daneden.github.io/animate.css/">animated.css</a>)</h4>
+						<h4><strong>Inserción en otro elemento</strong></h4>
 						<div class="row">
 							<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 well">
 								<button type="button" class="btn btn-success btn-xs add">Agrega nuevo Item</button>
@@ -187,7 +187,11 @@
 			$('.dinamic-4').repeter({
 				elements:{
 					removeClasses: 'animated flipOutX',
-					mirror:{selector:'#espejo-dinamic-4', tplSelector:'.template-mirror'}
+					mirror:{
+						selector:'#espejo-dinamic-4',
+						removeClasses: 'animated bounceOutRight',
+						tplSelector:'.template-mirror'
+					}
 				}
 			}); //Ejemplo con Espejo en otro template
 		});
