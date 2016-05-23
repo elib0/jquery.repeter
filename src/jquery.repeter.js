@@ -112,7 +112,7 @@
 
 		    	//Foco en penultimo elemento de formulario
 				if ($.fn.formValidation || $.fn.validator) 
-					ele.prev().find('select,input,textarea,button').last().focus();
+					$(ele).prev().find('select,input,textarea,button').last().focus();
 
 				//Eliminamos item
 		    	deleteItem(element,$root,$root.opt.elements.removeClasses);
