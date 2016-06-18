@@ -14,7 +14,13 @@
 						selector: null,
 						tmplSelector: null,
 						animation: null
-					}
+					},
+	            	onAddItem: function(){
+	            		console.log('Item Agregado');
+	            	},
+	            	onRemoveItem: function(){
+	            		console.log('Item Eliminado');
+	            	}
 				}
 			};
 
@@ -56,7 +62,6 @@
 					//tmplData: datos que se pasaran a la template (jquery-tmpl) https://github.com/BorisMoore/jquery-tmpl
 					tmplData = $.extend({'numElement':numElement},(this.opt.tmplData instanceof Function)?this.opt.tmplData.call(this.element):this.opt.tmplData||{}),
 					$new=(template.nodeName=='SCRIPT')?$(template).tmpl(tmplData):$(template).clone().removeClass(this.opt.tmplSelector);
-					console.log(this.opt.tmplData,tmplData);
 
 				//Insertamos elemento al repeter como tmplItem
 				this.items['item'+numElement] = $.tmplItem($new);
@@ -98,6 +103,8 @@
 						});
 					}
 				}
+				this.opt.elements.onAddItem();//Corremos funcion al agragar item
+
 				//Respuesta al agregar elemento
 				return {parent:this.element,addedElement:$new,removedElement:null};
 			},
@@ -142,6 +149,8 @@
 					}
 				}
 				delete this.items['item'+(numElements-1)];
+
+				this.opt.elements.onRemoveItem();
 				//Respuesta al borrar elemento
 				return {parent: this,addedElement:null,removedElement:element};
 			}
@@ -149,7 +158,6 @@
 
 		//Metodos privadas
 		function deleteItem(ele,$root,removeclass){
-			console.log(ele,$root,removeclass);
 			if (removeclass) {
 				ele.addClass(removeclass).one('webkitAnimationEnd oanimationend msAnimationEnd animationend',
 					function(e) {
