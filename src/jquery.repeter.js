@@ -1,28 +1,24 @@
 ;( function( $, window, document, undefined ) {
 	"use strict";
-		var pluginName = "repeter",
-			defaults = {
-				addBtnSelector:'.add',
-				remBtnSelector:'.remove',
-				tmplSelector: '.template',
-				formSelector: 'form',
-				elements: {
-					class: 'element',
-					appendTo: null,
-					animation: null,
-					mirror:{
-						selector: null,
-						tmplSelector: null,
-						animation: null
-					},
-	            	onAddItem: function(){
-	            		console.log('Item Agregado');
-	            	},
-	            	onRemoveItem: function(){
-	            		console.log('Item Eliminado');
-	            	}
-				}
-			};
+	var pluginName = "repeter",
+		defaults = {
+			addBtnSelector:'.add',
+			remBtnSelector:'.remove',
+			tmplSelector: '.template',
+			formSelector: 'form',
+			elements: {
+				class: 'element',
+				appendTo: null,
+				animation: null,
+				mirror:{
+					selector: null,
+					tmplSelector: null,
+					animation: null
+				},
+            	onAddItem: function(){},
+            	onRemoveItem: function(){}
+			}
+		};
 
 		// Constructor
 		function Repeter ( element, options ) {
