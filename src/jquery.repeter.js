@@ -9,6 +9,8 @@
 			elements: {
 				class: 'element',
 				appendTo: null,
+				allowDuplicated: true,
+				itemVerify: null,
 				animation: null,
 				mirror:{
 					selector: null,
@@ -57,52 +59,70 @@
 					numElement = $(this.element).find('.'+this.opt.elements.class).length,
 					//tmplData: datos que se pasaran a la template (jquery-tmpl) https://github.com/BorisMoore/jquery-tmpl
 					tmplData = $.extend({'numElement':numElement},(this.opt.tmplData instanceof Function)?this.opt.tmplData.call(this.element):this.opt.tmplData||{}),
-					$new=(template.nodeName=='SCRIPT')?$(template).tmpl(tmplData):$(template).clone().removeClass(this.opt.tmplSelector);
+					$new=(template.nodeName=='SCRIPT')?$(template).tmpl(tmplData):$(template).clone().removeClass(this.opt.tmplSelector),
+					itemFound = false;
 
 				//Insertamos elemento al repeter como tmplItem
-				this.items['item'+numElement] = $.tmplItem($new);
+				if (this.opt.elements.allowDuplicated) {
+					this.items['item'+numElement] = $.tmplItem($new);
+				} else {
+					var rEleNum = $(this.element).find('.'+this.opt.elements.class);
+					var item = this.opt.elements.itemVerify;
+					rEleNum.each(function( index ) {
+						if ($( this ).text().indexOf(tmplData[item]) >= 0) {
+							itemFound = true;
+							return false;
+						}
+					});
+					if (!itemFound) {
+						this.items['item'+numElement] = $.tmplItem($new);
+					}
+				}
 
-				//Agregamos clase de elemento
-				$new.addClass(this.opt.elements.class+' r-ele-'+numElement).data('r-ele', numElement);
+				if (this.opt.elements.allowDuplicate || !itemFound) {
+					//Agregamos clase de elemento
+					$new.addClass(this.opt.elements.class+' r-ele-'+numElement).data('r-ele', numElement);
 
-				//Buscamos la opcion de insercion(Otro contedor o espejo)
-				var appendTo = this.opt.elements.appendTo || this.opt.elements.insertIn || this.opt.elements.mirror.selector;
-				//conservado insertIn por soporte
-				//Inserta template de acuerdo a opciones
-				if (appendTo) {
-					var $clone = null;
-					if (this.opt.elements.mirror.selector){
-						if (mirrorTemplate) {//Si existe otro template para el espejo
-							var $newMirror=(mirrorTemplate.nodeName=='SCRIPT')?$(mirrorTemplate).tmpl(tmplData):$(mirrorTemplate).clone().removeClass(this.opt.tmplSelector);
-							//Agregamos clase de elemento
-							$clone = $newMirror.addClass('r-ele-'+numElement).data('r-ele', numElement);
-						}else{
-							//Clonamos elemento para insertar en espejo
-							$clone = $new.clone().removeClass(this.opt.elements.class);
-							//Quitamos boton de eliminar
-							$clone.find('.remove')[0].remove();
+					//Buscamos la opcion de insercion(Otro contedor o espejo)
+					var appendTo = this.opt.elements.appendTo || this.opt.elements.insertIn || this.opt.elements.mirror.selector;
+					//conservado insertIn por soporte
+					//Inserta template de acuerdo a opciones
+
+					if (appendTo) {
+						var $clone = null;
+						if (this.opt.elements.mirror.selector){
+							if (mirrorTemplate) {//Si existe otro template para el espejo
+								var $newMirror=(mirrorTemplate.nodeName=='SCRIPT')?$(mirrorTemplate).tmpl(tmplData):$(mirrorTemplate).clone().removeClass(this.opt.tmplSelector);
+								//Agregamos clase de elemento
+								$clone = $newMirror.addClass('r-ele-'+numElement).data('r-ele', numElement);
+							}else{
+								//Clonamos elemento para insertar en espejo
+								$clone = $new.clone().removeClass(this.opt.elements.class);
+								//Quitamos boton de eliminar
+								$clone.find('.remove')[0].remove();
+							}
+						}
+						//Insertamos elemento
+						$(appendTo).append($clone || $new);
+					}
+					if (!this.opt.elements.appendTo || this.opt.elements.mirror.selector) $new.insertBefore(template);
+
+					// Si se utiliza "Bootstrap Validator" http://1000hz.github.io/bootstrap-validator/
+					// O "formValidation" http://formvalidation.io/
+					if ($.fn.formValidation || $.fn.validator) {
+						var $form = $(this.element).closest(this.opt.formSelector);
+						$new.find('[disabled]').prop('disabled',false);
+						if($form.data('formValidation')){
+							$new.find('input,textarea,select').filter(':visible').each(function(){
+								$form.formValidation('addField',this.name);
+							});
 						}
 					}
-					//Insertamos elemento
-					$(appendTo).append($clone || $new);
-				}
-				if (!this.opt.elements.appendTo || this.opt.elements.mirror.selector) $new.insertBefore(template);
+					this.opt.elements.onAddItem();//Corremos funcion al agragar item
 
-				// Si se utiliza "Bootstrap Validator" http://1000hz.github.io/bootstrap-validator/
-				// O "formValidation" http://formvalidation.io/
-				if ($.fn.formValidation || $.fn.validator) {
-					var $form = $(this.element).closest(this.opt.formSelector);
-					$new.find('[disabled]').prop('disabled',false);
-					if($form.data('formValidation')){
-						$new.find('input,textarea,select').filter(':visible').each(function(){
-							$form.formValidation('addField',this.name);
-						});
-					}
+					//Respuesta al agregar elemento
+					return {parent:this.element,addedElement:$new,removedElement:null};
 				}
-				this.opt.elements.onAddItem();//Corremos funcion al agragar item
-
-				//Respuesta al agregar elemento
-				return {parent:this.element,addedElement:$new,removedElement:null};
 			},
 			/**
 			 * [removeItem Elimina un Item del Repeter]
@@ -139,7 +159,6 @@
 				if (mirror) {
 					for (var i = rEleNum; i < numElements; i++) {
 						$('.r-ele-'+i, this.opt.elements.mirror.selector)
-							// .html('holas')
 							.removeClass('r-ele-'+i)
 							.addClass('r-ele-'+(i-1));
 					}
@@ -174,7 +193,7 @@
 						$.data(this, 'plugin_' + pluginName, new Repeter( this, options ));
 					}
 				});
-			//Ahora si se ya hay una instancia del plugin se puede pasar una cadena con el nombre de la funcion
+			//Ahora si ya hay una instancia del plugin, se puede pasar una cadena con el nombre de la funcion
 			} else if (typeof options === 'string' && options[0] !== '_' && options !== 'init') {
 				var returns;
 				this.each(function () {
